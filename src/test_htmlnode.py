@@ -18,3 +18,6 @@ class TestHTMLNode(unittest.TestCase):
     def test_props_to_html_with_no_props(self):
         node = HTMLNode()
         self.assertEqual(node.props_to_html(), "")
+
+if __name__ == "__main__":
+    unittest.main()
