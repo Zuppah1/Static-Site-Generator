@@ -11,17 +11,17 @@ class TestTextNode(unittest.TestCase):
 
     def test_eq_2(self):
         node = TextNode("Test number 2", TextType.ITALIC)
-        node2 = TextNode("Test number 2", TextType.NORMAL)
+        node2 = TextNode("Test number 2", TextType.TEXT)
         self.assertNotEqual(node, node2)
 
     def test_eq_3(self):
-        node = TextNode("Test number 3", TextType.NORMAL)
-        node2 = TextNode("This is different", TextType.NORMAL)
+        node = TextNode("Test number 3", TextType.TEXT)
+        node2 = TextNode("This is different", TextType.TEXT)
         self.assertNotEqual(node, node2)
 
     def test_eq_4(self):
-        node = TextNode("Test number 4", TextType.NORMAL, "https://www.boot.dev")
-        node2 = TextNode("Test number 4", TextType.NORMAL)
+        node = TextNode("Test number 4", TextType.TEXT, "https://www.boot.dev")
+        node2 = TextNode("Test number 4", TextType.TEXT)
         self.assertNotEqual(node, node2)
 
     def test_eq_5(self):
