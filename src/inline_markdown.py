@@ -2,6 +2,16 @@ import re
 from textnode import TextNode, TextType
 from htmlnode import HTMLNode, LeafNode, text_node_to_html_node, ParentNode
 
+def text_to_textnodes(text):
+    node = TextNode(text, TextType.TEXT)
+    bold = split_nodes_delimiter([node], "**", TextType.BOLD)
+    italic = split_nodes_delimiter(bold, "_", TextType.ITALIC)
+    code = split_nodes_delimiter(italic, "`", TextType.CODE)
+    text_nodes_links = split_nodes_link(code)
+    text_nodes = split_nodes_image(text_nodes_links)
+    return text_nodes
+
+
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes_list = []
     for node in old_nodes:
@@ -25,10 +35,15 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                 raise ValueError(f"Closing delimiter not found for '{delimiter}'")
                 
             if start_pos > 0:
-                new_nodes_list.append(TextNode(current_text[:start_pos], TextType.TEXT))
+                text_segment = current_text[:start_pos]
+                if text_segment.strip():  
+                    new_nodes_list.append(TextNode(text_segment, TextType.TEXT))
                 
             delimited_text = current_text[start_pos + len(delimiter):end_pos]
-            new_nodes_list.append(TextNode(delimited_text, text_type))
+
+            if delimited_text.strip():
+                new_nodes_list.append(TextNode(delimited_text, text_type))
+
             
             current_text = current_text[end_pos + len(delimiter):]
 
@@ -55,7 +70,7 @@ def split_nodes_image(old_nodes):
         while True:
             match = extract_markdown_images(remaining_text)
             if not match:
-                if remaining_text:
+                if remaining_text.strip():
                     new_nodes_list.append(TextNode(remaining_text, TextType.TEXT))
                 break
                                
@@ -67,7 +82,7 @@ def split_nodes_image(old_nodes):
             before = parts[0]
             after = parts[1] if len(parts) > 1 else ""
 
-            if before:
+            if before.strip():
                 new_nodes_list.append(TextNode(before, TextType.TEXT))
 
             new_nodes_list.append(TextNode(alt_text, TextType.IMAGE, url_text))
@@ -90,7 +105,7 @@ def split_nodes_link(old_nodes):
         while True:
             match = extract_markdown_links(remaining_text)
             if not match:
-                if remaining_text:
+                if remaining_text.strip():
                     new_nodes_list.append(TextNode(remaining_text, TextType.TEXT))
                 break
                                
@@ -102,7 +117,7 @@ def split_nodes_link(old_nodes):
             before = parts[0]
             after = parts[1] if len(parts) > 1 else ""
 
-            if before:
+            if before.strip():
                 new_nodes_list.append(TextNode(before, TextType.TEXT))
 
             new_nodes_list.append(TextNode(alt_text, TextType.LINK, url_text))

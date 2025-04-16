@@ -1,7 +1,7 @@
 import unittest
 
 from textnode import TextNode, TextType
-from inline_markdown import split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link
+from inline_markdown import split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnodes
 
 
 class TestDelimiter(unittest.TestCase):
@@ -101,9 +101,7 @@ class TestDelimiter(unittest.TestCase):
     def test_delimited_EmptyBold(self):
         node = TextNode("****", TextType.TEXT)
         delimited_node = split_nodes_delimiter([node], "**", TextType.BOLD)
-        result = [
-            TextNode("", TextType.BOLD), 
-        ]
+        result = []
         self.assertEqual(delimited_node, result)
 
 class TestExtract(unittest.TestCase): 
@@ -232,3 +230,47 @@ class TestImageLinkSplit(unittest.TestCase):
             final_nodes,
         )
 
+class TestTextToTextNodes(unittest.TestCase):
+    def test_all_in_one(self):
+        node = text_to_textnodes("This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)")
+        self.assertListEqual(
+            [
+                TextNode("This is ", TextType.TEXT),
+                TextNode("text", TextType.BOLD),
+                TextNode(" with an ", TextType.TEXT),
+                TextNode("italic", TextType.ITALIC),
+                TextNode(" word and a ", TextType.TEXT),
+                TextNode("code block", TextType.CODE),
+                TextNode(" and an ", TextType.TEXT),
+                TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+                TextNode(" and a ", TextType.TEXT),
+                TextNode("link", TextType.LINK, "https://boot.dev"),
+            ],
+            node
+        )
+
+    def test_no_text(self):
+        node = text_to_textnodes("**text** _italic_ `code block` ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) [link](https://boot.dev)")
+        self.assertListEqual(
+            [
+                TextNode("text", TextType.BOLD),
+                TextNode("italic", TextType.ITALIC),
+                TextNode("code block", TextType.CODE),
+                TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+                TextNode("link", TextType.LINK, "https://boot.dev"),
+            ],
+            node
+        )
+
+    def test_just_text(self):
+        node = text_to_textnodes("This is plain text without any markdown")
+        self.assertListEqual(
+            [
+                TextNode("This is plain text without any markdown", TextType.TEXT),
+            ],
+            node
+        )
+
+    def test_empty_input(self):
+        node = text_to_textnodes("")
+        self.assertListEqual([], node)
