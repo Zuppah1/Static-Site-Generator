@@ -29,7 +29,7 @@ class LeafNode(HTMLNode):
 
     def to_html(self):
         if self.value is None:
-            raise ValueError
+            raise ValueError("invalid HTML: no value")
         
         if self.tag is None:
             return self.value
@@ -39,6 +39,9 @@ class LeafNode(HTMLNode):
         
         if self.props is not None:
             return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
+    
+    def __repr__(self):
+        return f"LeafNode({self.tag}, {self.value}, {self.props})"
 
 
 class ParentNode(HTMLNode):
@@ -52,7 +55,8 @@ class ParentNode(HTMLNode):
         if self.children is None:
             raise ValueError("missing children")
         
-        string = f"<{self.tag}>"
+        props_str = self.props_to_html()
+        string = f"<{self.tag}{props_str}>"
 
         for child in self.children:
            string += child.to_html()
@@ -60,6 +64,9 @@ class ParentNode(HTMLNode):
         string = string + f"</{self.tag}>"
 
         return string
+    
+    def __repr__(self):
+        return f"ParentNode({self.tag}, children: {self.children}, {self.props})"
 
 def text_node_to_html_node(text_node):
     match(text_node.text_type):
@@ -76,7 +83,7 @@ def text_node_to_html_node(text_node):
         case TextType.IMAGE:
             return LeafNode("img", "", {"src":text_node.url, "alt":text_node.text})
         case _:
-            raise Exception("wrong text type")
+            raise ValueError(f"invalid text type: {text_node.text_type}")
         
 
         
