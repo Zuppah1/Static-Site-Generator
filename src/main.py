@@ -2,6 +2,7 @@ from textnode import TextType
 from textnode import TextNode
 from htmlnode import HTMLNode
 from copystatic import copy_to_public
+from generate_page import generate_page
 
 def main():
 
@@ -13,5 +14,7 @@ def main():
         print("Static files successfully copied to public directory!")
     except Exception as e:
         print(f"Error copying static files: {e}")
+
+    generate_page("content/index.md", "template.html", "public/index.html")
 
 main()
