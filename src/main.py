@@ -1,12 +1,17 @@
 from textnode import TextType
 from textnode import TextNode
 from htmlnode import HTMLNode
+from copystatic import copy_to_public
 
 def main():
 
-    test = TextNode("This is a test", TextType.BOLD, "https://www.boot.dev")
-    test_html = HTMLNode("This", "Is", "A", "Test")
+    source_dir = "static"
+    destination_dir = "public"
 
-    print(test, test_html)
+    try:
+        copy_to_public(source_dir, destination_dir)
+        print("Static files successfully copied to public directory!")
+    except Exception as e:
+        print(f"Error copying static files: {e}")
 
 main()
