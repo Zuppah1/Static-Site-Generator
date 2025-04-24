@@ -7,12 +7,15 @@ from generate_page import generate_pages_recursive
 
 def main():
 
-    basepath = sys.argv[1] if len(sys.argv) > 1 else "/"
-
     dir_path_static = "./static"
     dir_path_public = "./docs"
     dir_path_content = "./content"
     template_path = "./template.html"
+    default_basepath = "/"
+
+    basepath = default_basepath
+    if len(sys.argv) > 1:
+        basepath = sys.argv[1]
 
     try:
         copy_to_public(dir_path_static, dir_path_public)
