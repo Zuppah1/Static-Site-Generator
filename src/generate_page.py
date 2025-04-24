@@ -3,11 +3,12 @@ from pathlib import Path
 from block_markdown import markdown_to_html_node
 
 
-def extract_title(markdown):
-    if markdown.startswith("# "):
-        return markdown.lstrip("# ").strip()
-    else:
-        raise Exception("missing title")
+def extract_title(md):
+    lines = md.split("\n")
+    for line in lines:
+        if line.startswith("# "):
+            return line[2:]
+    raise ValueError("no title found")
 
 def generate_page(from_path, template_path, dest_path, basepath):
 
