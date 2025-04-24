@@ -9,7 +9,7 @@ def extract_title(markdown):
     else:
         raise Exception("missing title")
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
 
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
 
@@ -26,6 +26,8 @@ def generate_page(from_path, template_path, dest_path):
 
     template_file = template_file.replace("{{ Title }}", title)
     template_file = template_file.replace("{{ Content }}", html_string)
+    template_file = template_file.replace('href="/', f'href="{basepath}')
+    template_file = template_file.replace('src="/', f'src="{basepath}')
     
     dest_dir = os.path.dirname(dest_path)
 
@@ -35,7 +37,7 @@ def generate_page(from_path, template_path, dest_path):
     with open(dest_path, 'w') as f:
         f.write(template_file)
 
-def generate_pages_recursive(from_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(from_path_content, template_path, dest_dir_path, basepath):
 
     directory_list = os.listdir(from_path_content)
 
@@ -46,7 +48,7 @@ def generate_pages_recursive(from_path_content, template_path, dest_dir_path):
 
         if os.path.isfile(source_path):
             destination_path = Path(destination_path).with_suffix(".html")
-            generate_page(source_path, template_path, destination_path)
+            generate_page(source_path, template_path, destination_path, basepath)
 
         else:
-            generate_pages_recursive(source_path, template_path, destination_path)
+            generate_pages_recursive(source_path, template_path, destination_path, basepath)
